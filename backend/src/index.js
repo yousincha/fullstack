@@ -5,6 +5,7 @@ const cors = require("cors");
 const port = 4000;
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const { error } = require("console");
 dotenv.config();
 
 app.use(cors());
@@ -19,13 +20,24 @@ mongoose
     console.error(err);
   });
 
-app.get("/", (req, res) => {
-  res.send("안녕하세요");
+app.get("/", (req, res, next) => {
+  setImmediate(() => {
+    // 에러 핸들링 미들웨어로 직접 에러 전달
+    next(new Error("It is an error"));
+  });
 });
 
 app.post("/", (req, res) => {
   console.log(req.body);
   res.json(req.body);
+});
+
+// app.use("/users", require("./routes/users"));
+// app.use("/products", require("./routes/products"));
+
+app.use((error, req, res, next) => {
+  res.status(error.status || 500);
+  res.send(error.message || "서버에서 에러가 발생했습니다.");
 });
 
 app.use(express.static(path.join(__dirname, "../uploads")));
