@@ -9,8 +9,8 @@ import {
   REGISTER,
   REHYDRATE,
   persistReducer,
+  persistStore,
 } from "redux-persist";
-import persistStore from "redux-persist/es/persistStore";
 
 const rootReducer = combineReducers({
   user: userReducer,

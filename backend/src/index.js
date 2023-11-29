@@ -5,7 +5,6 @@ const cors = require("cors");
 const port = 4000;
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const { error } = require("console");
 dotenv.config();
 
 app.use(cors());
@@ -22,11 +21,9 @@ mongoose
 
 app.get("/", (req, res, next) => {
   setImmediate(() => {
-    // 에러 핸들링 미들웨어로 직접 에러 전달
-    next(new Error("It is an error"));
+    next(new Error("it is an error"));
   });
 });
-
 app.post("/", (req, res) => {
   console.log(req.body);
   res.json(req.body);
