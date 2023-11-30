@@ -1,5 +1,7 @@
 const express = require("express");
 const User = require("../models/User");
+const Product = require("../models/Product");
+const Payment = require("../models/Payment");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth");
@@ -12,6 +14,8 @@ router.get("/auth", auth, async (req, res, next) => {
     name: req.user.name,
     role: req.user.role,
     image: req.user.image,
+    cart: req.user.cart,
+    history: req.user.history,
   });
 });
 
@@ -24,6 +28,7 @@ router.post("/register", async (req, res, next) => {
     next(error);
   }
 });
+
 router.post("/login", async (req, res, next) => {
   // req.body   password , email
   try {
@@ -54,5 +59,11 @@ router.post("/login", async (req, res, next) => {
     next(error);
   }
 });
-
+router.post("/logout", auth, async (req, res, next) => {
+  try {
+    return res.sendStatus(200);
+  } catch (error) {
+    next(error);
+  }
+});
 module.exports = router;

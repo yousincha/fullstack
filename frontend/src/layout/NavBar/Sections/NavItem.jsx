@@ -2,10 +2,20 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { logoutUser } from "../../../store/thunkFunctions";
+import { AiOutlineShoppingCart } from "react-icons/ai";
+
 const routes = [
   { to: "/login", name: "로그인", auth: false },
   { to: "/register", name: "회원가입", auth: false },
+  { to: "/product/upload", name: "업로드", auth: true },
+  {
+    to: "/user/cart",
+    name: "카트",
+    auth: true,
+    icon: <AiOutlineShoppingCart style={{ fontSize: "1.4rem" }} />,
+  },
   { to: "", name: "로그아웃", auth: true },
+  { to: "/history", name: "주문목록", auth: true },
 ];
 
 // eslint-disable-next-line react/prop-types
@@ -15,8 +25,9 @@ const NavItem = ({ mobile }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    dispatch(logoutUser());
-    navigate("/");
+    dispatch(logoutUser()).then(() => {
+      navigate("/login");
+    });
   };
 
   return (
