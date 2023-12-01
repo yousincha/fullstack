@@ -9,6 +9,7 @@ import axiosInstance from "../../utils/axios";
 import { continents, prices } from "../../utils/filterData";
 
 const LandingPage = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const limit = 4;
   const [products, setProducts] = useState([]);
   const [skip, setSkip] = useState(0);
@@ -27,11 +28,13 @@ const LandingPage = () => {
     limit,
     loadMore = false,
     filters = {},
+    searchTerm = "",
   }) => {
     const params = {
       skip,
       limit,
       filters,
+      searchTerm,
     };
     try {
       const response = await axiosInstance.get("/products", { params });
@@ -52,6 +55,7 @@ const LandingPage = () => {
       limit,
       loadMore: true,
       filters,
+      searchTerm,
     };
     fetchProducts(body);
     setSkip(skip + limit);
@@ -83,11 +87,25 @@ const LandingPage = () => {
       skip: 0,
       limit,
       filters,
+      searchTerm,
     };
 
     fetchProducts(body);
     setSkip(0);
   };
+
+  const handleSearchTerm = (event) => {
+    const body = {
+      skip: 0,
+      limit,
+      filters,
+      searchTerm: event.target.value,
+    };
+    setSkip(0);
+    setSearchTerm(event.target.value);
+    fetchProducts(body);
+  };
+
   return (
     <section>
       <div className="text-center m-7">
@@ -112,8 +130,8 @@ const LandingPage = () => {
       </div>
 
       {/* Search */}
-      <div className="flex justify-end">
-        <SearchInput />
+      <div className="flex justify-end mb-3">
+        <SearchInput searchTerm={searchTerm} onSearch={handleSearchTerm} />
       </div>
       {/* Card */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
