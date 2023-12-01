@@ -1,11 +1,13 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import CheckBox from "./Sections/CheckBox";
 import RadioBox from "./Sections/RadioBox";
 import SearchInput from "./Sections/SearchInput";
 import CardItem from "./Sections/CardItem";
 import axiosInstance from "../../utils/axios";
+import { continents, prices } from "../../utils/filterData";
+
 const LandingPage = () => {
   const limit = 4;
   const [products, setProducts] = useState([]);
@@ -13,31 +15,37 @@ const LandingPage = () => {
   const [hasMore, setHasMore] = useState(false);
   const [filters, setFilters] = useState({
     continents: [],
-    price: [],
+    prices: [],
   });
+
   useEffect(() => {
     fetchProducts({ skip, limit });
   }, []);
+
   const fetchProducts = async ({
     skip,
     limit,
+    loadMore = false,
     filters = {},
-    searchTerm = "",
   }) => {
     const params = {
       skip,
       limit,
       filters,
-      searchTerm,
     };
     try {
       const response = await axiosInstance.get("/products", { params });
-      setProducts(response.data.products);
+
+      if (loadMore) {
+        setProducts([...products, ...response.data.products]);
+      } else {
+        setProducts(response.data.products);
+      }
+      setHasMore(response.data.hasMore);
     } catch (error) {
-      console.error();
+      console.error(error);
     }
   };
-
   const handleLoadMore = () => {
     const body = {
       skip: skip + limit,
@@ -48,6 +56,38 @@ const LandingPage = () => {
     fetchProducts(body);
     setSkip(skip + limit);
   };
+  const handleFilters = (newFilteredData, category) => {
+    const newFilters = { ...filters };
+    newFilters[category] = newFilteredData;
+    if (category === "price") {
+      const priceValues = handlePrice(newFilteredData);
+      newFilters[category] = priceValues;
+    }
+    showFilteredResults(newFilters);
+    setFilters(newFilters);
+  };
+
+  const handlePrice = (value) => {
+    let array = [];
+
+    for (let key in prices) {
+      if (prices[key]._id === parseInt(value, 10)) {
+        array = prices[key].array;
+      }
+    }
+    return array;
+  };
+  const showFilteredResults = (filters) => {
+    console.log(filters);
+    const body = {
+      skip: 0,
+      limit,
+      filters,
+    };
+
+    fetchProducts(body);
+    setSkip(0);
+  };
   return (
     <section>
       <div className="text-center m-7">
@@ -56,12 +96,21 @@ const LandingPage = () => {
       {/* Filter */}
       <div className="flex gap-3">
         <div className="w-1/2">
-          <CheckBox />
+          <CheckBox
+            continents={continents}
+            checkedContinents={filters.continents}
+            onFilters={(filters) => handleFilters(filters, "continents")}
+          />
         </div>
         <div className="w-1/2">
-          <RadioBox />
+          <RadioBox
+            prices={prices}
+            checkedPrice={filters.price}
+            onFilters={(filters) => handleFilters(filters, "price")}
+          />
         </div>
       </div>
+
       {/* Search */}
       <div className="flex justify-end">
         <SearchInput />
