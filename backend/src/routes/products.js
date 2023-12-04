@@ -28,6 +28,12 @@ router.get("/:id", async (req, res, next) => {
   const type = req.query.type;
   let productIds = req.params.id;
 
+  if (type === "array") {
+    let ids = productIds.split(",");
+    productIds = ids.map((item) => {
+      return item;
+    });
+  }
   //productId를 이용해서 DB에서 productId와 같은 상품의 정보를 가져옵니다.
   try {
     const product = await Product.find({ _id: { $in: productIds } }).populate(
