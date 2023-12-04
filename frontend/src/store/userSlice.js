@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  addToCart,
   authUser,
   loginUser,
   logoutUser,
@@ -39,6 +40,22 @@ const userSlice = createSlice({
         state.error = action.payload;
         toast.error(action.payload);
       })
+      //인증
+      .addCase(authUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(authUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.userData = action.payload;
+        state.isAuth = true;
+      })
+      .addCase(authUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+        state.userData = initialState.userData;
+        state.isAuth = false;
+        localStorage.removeItem("accessToken");
+      })
       //로그인
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
@@ -69,21 +86,19 @@ const userSlice = createSlice({
         state.error = action.payload;
         toast.error(action.payload);
       })
-      //인증
-      .addCase(authUser.pending, (state) => {
+      //장바구니
+      .addCase(addToCart.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(authUser.fulfilled, (state, action) => {
+      .addCase(addToCart.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.userData = action.payload;
-        state.isAuth = true;
+        state.userData.cart = action.payload;
+        toast.info("장바구니에 추가되었습니다");
       })
-      .addCase(authUser.rejected, (state, action) => {
+      .addCase(addToCart.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-        state.userData = initialState.userData;
-        state.isAuth = false;
-        localStorage.removeItem("accessToken");
+        toast.error(action.payload);
       });
   },
 });
