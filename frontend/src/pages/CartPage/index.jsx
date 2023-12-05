@@ -1,24 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getCartItems, removeCartItem } from "../../store/thunkFunctions";
+import {
+  getCartItems,
+  payProducts,
+  removeCartItem,
+} from "../../store/thunkFunctions";
 import CartTable from "./Sections/CartTable";
 
-const Cartpage = () => {
+const CartPage = () => {
   const userData = useSelector((state) => state.user?.userData);
   const cartDetail = useSelector((state) => state.user?.cartDetail);
-
   const dispatch = useDispatch();
   const [total, setTotal] = useState(0);
   useEffect(() => {
     let cartItemIds = [];
+
     if (userData?.cart && userData.cart.length > 0) {
       userData.cart.forEach((item) => {
         cartItemIds.push(item.id);
       });
+
       const body = {
         cartItemIds,
         userCart: userData.cart,
       };
+
       dispatch(getCartItems(body));
     }
   }, [dispatch, userData]);
@@ -36,7 +42,11 @@ const Cartpage = () => {
   const handleRemoveCartItem = (productId) => {
     dispatch(removeCartItem(productId));
   };
-  const handlePaymentClick = () => {};
+
+  const handlePaymentClick = () => {
+    dispatch(payProducts({ cartDetail }));
+  };
+
   return (
     <section>
       <div className="text-center m-7">
@@ -69,4 +79,4 @@ const Cartpage = () => {
   );
 };
 
-export default Cartpage;
+export default CartPage;

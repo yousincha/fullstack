@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -14,13 +15,15 @@ const routes = [
     auth: true,
     icon: <AiOutlineShoppingCart style={{ fontSize: "1.4rem" }} />,
   },
+
   { to: "", name: "로그아웃", auth: true },
   { to: "/history", name: "주문목록", auth: true },
 ];
 
-// eslint-disable-next-line react/prop-types
 const NavItem = ({ mobile }) => {
   const isAuth = useSelector((state) => state.user?.isAuth);
+  const cart = useSelector((state) => state.user?.userData?.cart);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -56,7 +59,9 @@ const NavItem = ({ mobile }) => {
             >
               <Link to={to}>
                 {icon}
-                <span className="absolute top-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -right-3"></span>
+                <span className="absolute top-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -right-3">
+                  {cart?.length}
+                </span>
               </Link>
             </li>
           );
